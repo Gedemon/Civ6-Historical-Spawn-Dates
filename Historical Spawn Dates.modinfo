@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mod id="684731c5-4837-427d-9378-0c58e1201325">
+	<Properties>
+		<Name>LOC_HISTORICAL_SPAWN_DATES_TITLE</Name>
+		<Teaser>LOC_HISTORICAL_SPAWN_DATES_TEASER</Teaser>
+		<Description>LOC_HISTORICAL_SPAWN_DATES_DESCRIPTION</Description>
+		<Authors>Gedemon</Authors>
+	</Properties>
+	<LocalizedText>
+		<Text id="LOC_HISTORICAL_SPAWN_DATES_TITLE">
+			<en_US>Historical Spawn Dates</en_US>
+		</Text>
+		<Text id="LOC_HISTORICAL_SPAWN_DATES_TEASER">
+			<en_US>Historical Spawn Dates</en_US>
+		</Text>
+		<Text id="LOC_HISTORICAL_SPAWN_DATES_DESCRIPTION">
+			<en_US>Historical Spawn Dates</en_US>
+		</Text>
+	</LocalizedText>	
+	<InGameActions>
+		<UpdateDatabase id="HSD_PRE_COMPONENT">
+           	<Properties>
+				<LoadOrder>-100</LoadOrder>
+           	</Properties>
+			<File>Data/Tables.sql</File>
+		</UpdateDatabase>
+		<UpdateDatabase id="HSD_COMPONENTS">
+           	<Properties>
+				<LoadOrder>-10</LoadOrder>
+           	</Properties>
+			<File>Data/GamePlay.sql</File>
+			<File>Data/HistoricalSpawnDates.sql</File>
+		</UpdateDatabase>
+		<AddUserInterfaces id="HSD_INGAME">
+			<Properties>
+				<Context>InGame</Context>
+			</Properties>
+			<File>Scripts/InGameHSD.xml</File>
+		</AddUserInterfaces>
+		<AddGameplayScripts id="HSD_SCRIPTS">
+			<File>Scripts/ScriptHSD.lua</File>
+		</AddGameplayScripts>
+	</InGameActions>	
+	<FrontEndActions>
+		<UpdateDatabase id="HSD_SETTING">
+			<File>Config/Config.xml</File>
+		</UpdateDatabase>
+		<UpdateText id="HSD_SETTING_LOC">
+			<File>Config/ConfigText.xml</File>
+		</UpdateText>
+	</FrontEndActions>
+	<Files>
+		<File>Data/Tables.sql</File>
+		<File>Data/HistoricalSpawnDates.sql</File>
+		<File>Data/GamePlay.sql</File>
+		<File>Config/Config.xml</File>
+		<File>Config/ConfigText.xml</File>
+		<File>Scripts/InGameHSD.xml</File>
+		<File>Scripts/InGameHSD.lua</File>
+		<File>Scripts/ScriptHSD.lua</File>
+	</Files>
+</Mod>

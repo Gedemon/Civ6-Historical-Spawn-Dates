@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GameInfo>
+	<Parameters>
+		<Row ParameterId="HistoricalSpawnDates" Name="LOC_MAP_HISTORICAL_SPAWN_NAME" Description="" Domain="bool" DefaultValue="1" ConfigurationGroup="Map" ConfigurationId="HistoricalSpawnDates" GroupId="MapOptions" Visible="0" SortIndex="300"/>	
+	</Parameters>
+	<ParameterDependencies>	
+		<Row ParameterId="ForceTSL" ConfigurationGroup="Map" ConfigurationId="HistoricalSpawnDates" Operator="NotEquals" ConfigurationValue="1"/>
+	</ParameterDependencies>	
+</GameInfo>
