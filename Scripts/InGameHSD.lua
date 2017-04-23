@@ -27,18 +27,26 @@ end
 Events.TurnEnd.Add( SetTurnYear )
 
 function SetAutoValues()
-	UserConfiguration.SetValue("QuickMovement", 1)
-	UserConfiguration.SetValue("QuickCombat", 1)
+	--UserConfiguration.SetValue("QuickMovement", 1)
+	--UserConfiguration.SetValue("QuickCombat", 1)
 	UserConfiguration.SetValue("AutoEndTurn", 1)
 end
 LuaEvents.SetAutoValues.Add(SetAutoValues)
 
 function RestoreAutoValues()
-	UserConfiguration.SetValue("QuickMovement", defaultQuickMovement)
-	UserConfiguration.SetValue("QuickCombat", 	defaultQuickCombat 	)
+	--UserConfiguration.SetValue("QuickMovement", defaultQuickMovement)
+	--UserConfiguration.SetValue("QuickCombat", 	defaultQuickCombat 	)
 	UserConfiguration.SetValue("AutoEndTurn", 	defaultAutoEndTurn	)
 end
 LuaEvents.RestoreAutoValues.Add(RestoreAutoValues)
+
+function SetStartingEra(iPlayer, era)
+	local key = "StartingEra"..tostring(iPlayer)
+	print ("saving key = "..key..", value = ".. tostring(era))
+	GameConfiguration.SetValue(key, era)
+end
+LuaEvents.SetStartingEra.Add( SetStartingEra )
+
 
 -- Set current & next turn year ASAP when (re)loading
 LuaEvents.SetCurrentTurnYear(Calendar.GetTurnYearForGame(Game.GetCurrentGameTurn()))

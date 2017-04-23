@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GameData>
+  <LocalizedText>	
+	<Replace Tag="LOC_BUILDING_CENTER_NAME" Language="en_US">
+      <Text>Center Plazza</Text>
+    </Replace>	
+	<Replace Tag="LOC_BUILDING_CENTER_DESCRIPTION" Language="en_US">
+      <Text>Center Plazza</Text>
+    </Replace>	
+  </LocalizedText>
+</GameData>

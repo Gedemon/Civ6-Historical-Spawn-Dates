@@ -29,8 +29,12 @@
 				<LoadOrder>-10</LoadOrder>
            	</Properties>
 			<File>Data/GamePlay.sql</File>
+			<File>Data/GamePlay.xml</File>
 			<File>Data/HistoricalSpawnDates.sql</File>
 		</UpdateDatabase>
+		<UpdateText id="HSD_LOC">
+			<File>Data/GameText.xml</File>
+		</UpdateText>
 		<AddUserInterfaces id="HSD_INGAME">
 			<Properties>
 				<Context>InGame</Context>
@@ -53,6 +57,8 @@
 		<File>Data/Tables.sql</File>
 		<File>Data/HistoricalSpawnDates.sql</File>
 		<File>Data/GamePlay.sql</File>
+		<File>Data/GamePlay.xml</File>
+		<File>Data/GameText.xml</File>
 		<File>Config/Config.xml</File>
 		<File>Config/ConfigText.xml</File>
 		<File>Scripts/InGameHSD.xml</File>

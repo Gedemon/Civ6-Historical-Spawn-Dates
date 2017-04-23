@@ -8,6 +8,7 @@ print ("Historical Spawn Dates version " .. tostring(HSD_Version) .." (2017) by 
 print ("loading ScriptHSD.lua")
 
 local bHistoricalSpawnDates		= MapConfiguration.GetValue("HistoricalSpawnDates")
+local bApplyBalance				= MapConfiguration.GetValue("BalanceHSD")
 
 ----------------------------------------------------------------------------------------
 -- Historical Spawn Dates <<<<<
@@ -27,6 +28,9 @@ local researchedCivics	= {}	-- Table to track each researched civic
 local playersWithCity	= 0		-- Total number of major players with at least one city
 local scienceBonus		= 0
 local goldBonus			= 0
+local settlersBonus		= 0
+local tokenBonus		= 0
+local faithBonus		= 0
 local minCivForTech		= 1
 local minCivForCivic	= 1
 local currentEra		= 0
@@ -91,13 +95,31 @@ function SetNextTurnYear(year)
 end
 LuaEvents.SetNextTurnYear.Add( SetNextTurnYear )
 
+local StartingEra = {}
+function GetStartingEra(iPlayer)
+	print("------------")
+	local key = "StartingEra"..tostring(iPlayer)
+	local value = GameConfiguration.GetValue(key)
+	print("StartingEra[iPlayer] = "..tostring(StartingEra[iPlayer]))
+	print("GameConfiguration.GetValue("..tostring(key)..") = "..tostring(value))
+	return StartingEra[iPlayer] or value or 0
+end
+
+function SetStartingEra(iPlayer, era)
+	LuaEvents.SetStartingEra(iPlayer, era)	-- saved/reloaded
+	StartingEra[iPlayer] = era 				-- to keep the value in the current session, GameConfiguration.GetValue in this context will only work after a save/load
+end
+
+
 -- Remove Civilizations that can't be spawned on start date
 function InitializeHSD()
 	for iPlayer = 0, PlayerManager.GetWasEverAliveCount() - 1 do
 		local CivilizationTypeName = PlayerConfigurations[iPlayer]:GetCivilizationTypeName()
 		local spawnYear = spawnDates[CivilizationTypeName]
+		print("---------")
+		print("Check "..tostring(CivilizationTypeName)..", spawn year  = ".. tostring(spawnYear))
 		local player = Players[iPlayer]
-		if not (spawnYear and spawnYear >= previousTurnYear and spawnYear < currentTurnYear) then		
+		if spawnYear and spawnYear > currentTurnYear then		
 			if player:IsMajor() then
 				local playerUnits = player:GetUnits()
 				local toKill = {}
@@ -111,8 +133,7 @@ function InitializeHSD()
 					LuaEvents.SetAutoValues()
 				end
 			end
-		end
-		
+		end		
 	end
 end
 LuaEvents.InitializeHSD.Add(InitializeHSD)
@@ -126,17 +147,20 @@ function SpawnPlayer(iPlayer)
 			--print("Check Spawning Date for ", tostring(CivilizationTypeName), "Start Year = ", tostring(spawnYear), "Previous Turn Year = ", tostring(previousTurnYear), "Current Turn Year = ", tostring(currentTurnYear))
 			local iTurn = Game.GetCurrentGameTurn()
 			if spawnYear and spawnYear >= previousTurnYear and spawnYear < currentTurnYear then
-				local startingPlot = player:GetStartingPlot()
+				local startingPlot = player:GetStartingPlot()				
+				print ("----------")
 				print(" - Spawning", tostring(CivilizationTypeName), "Start Year = ", tostring(spawnYear), "Previous Turn Year = ", tostring(previousTurnYear), "Current Turn Year = ", tostring(currentTurnYear), "at", startingPlot:GetX(), startingPlot:GetY())
-				GetStartingBonuses(player) -- before placing city for era bonuses...	
+				LuaEvents.SpawnPlayer(iPlayer)
+				if bApplyBalance then
+					GetStartingBonuses(player) -- before placing city for era bonuses...
+				end
 				local city = player:GetCities():Create(startingPlot:GetX(), startingPlot:GetY())
 				if not city then
 					UnitManager.InitUnit(iPlayer, "UNIT_SETTLER", startingPlot:GetX(), startingPlot:GetY())
-				end			
+				end
 				if player:IsHuman() then
 					LuaEvents.RestoreAutoValues()
 				end
-				LuaEvents.SpawnPlayer(iPlayer)
 				return true
 			end	
 		end
@@ -148,13 +172,23 @@ GameEvents.PlayerTurnStarted.Add( SpawnPlayer )
 
 function GetStartingBonuses(player)
 
+	print(" - Starting era = "..tostring(currentEra))
+	SetStartingEra(player:GetID(), currentEra)
+	player:GetEras():SetStartingEra(currentEra)
+	
+	local kEraBonuses = GameInfo.StartEras[currentEra]
+	
+	-- gold
 	local pTreasury = player:GetTreasury()
-	print(" - Gold bonus = "..tostring(goldBonus))
-	pTreasury:ChangeGoldBalance(goldBonus)	
+	local playerGoldBonus = goldBonus
+	if currentEra > 0 and kEraBonuses.Gold then
+		playerGoldBonus = playerGoldBonus + kEraBonuses.Gold
+	end
+	print(" - Gold bonus = "..tostring(playerGoldBonus))
+	pTreasury:ChangeGoldBalance(playerGoldBonus)	
 	
-	local pCulture = player:GetCulture()
-	local pScience = player:GetTechs()
-	
+	-- science
+	local pScience = player:GetTechs()	
 	for iTech, number in pairs(knownTechs) do
 		if number >= minCivForTech then
 			pScience:SetTech(iTech, true)
@@ -162,17 +196,11 @@ function GetStartingBonuses(player)
 			pScience:TriggerBoost(iTech)
 		end
 	end	
+	print(" - Science bonus = "..tostring(scienceBonus))
+	pScience:ChangeCurrentResearchProgress(scienceBonus)
 	
-	--[[
-	for iCivic, number in pairs(knownCivics) do
-		if number >= minCivForCivic then
-			pCulture:SetCivic(iCivic, true)
-		else
-			pCulture:TriggerBoost(iCivic)
-		end
-	end
-	--]]
-	
+	-- culture
+	local pCulture = player:GetCulture()
 	for kCivic in GameInfo.Civics() do
 		local iCivic	= kCivic.Index
 		if knownCivics[iCivic] then
@@ -184,15 +212,40 @@ function GetStartingBonuses(player)
 		elseif researchedCivics[iCivic] then
 			pCulture:TriggerBoost(iCivic)
 		end
+	end	
+	
+	-- faith
+	local playerFaithBonus = faithBonus
+	if currentEra > 0 and kEraBonuses.Faith then
+		playerFaithBonus = playerFaithBonus + kEraBonuses.Faith
+	end
+	print(" - Faith bonus = "..tostring(playerFaithBonus))
+	player:GetReligion():ChangeFaithBalance(playerFaithBonus)
+	
+	-- token
+	print(" - Token bonus = "..tostring(tokenBonus))
+	player:GetInfluence():ChangeTokensToGive(tokenBonus)
+	
+	
+	-- units
+	local startingPlot = player:GetStartingPlot()
+		
+	print(" - Settlers = "..tostring(settlersBonus))
+	if settlersBonus > 0 then
+		UnitManager.InitUnitValidAdjacentHex(player:GetID(), "UNIT_SETTLER", startingPlot:GetX(), startingPlot:GetY(), settlersBonus)
 	end
 	
-	print(" - Science bonus = "..tostring(scienceBonus))
-	if playersWithCity > 0 then
-		pScience:ChangeCurrentResearchProgress(scienceBonus)
-	end
-
-	print(" - Starting era = "..tostring(currentEra))
-	player:GetEras():SetStartingEra(currentEra)
+	for kUnits in GameInfo.MajorStartingUnits() do
+		if GameInfo.Eras[kUnits.Era].Index == currentEra and not (kUnits.AiOnly) then -- (player:IsHuman() and kUnits.AiOnly) -- to do : difficulty difference check
+			local numUnit = math.max(kUnits.Quantity, 1)
+			print(" - "..tostring(kUnits.Unit).." = "..tostring(numUnit))
+			if kUnits.Unit == "UNIT_TRADER" then
+				UnitManager.InitUnit(player:GetID(), kUnits.Unit, startingPlot:GetX(), startingPlot:GetY())
+			else
+				UnitManager.InitUnitValidAdjacentHex(player:GetID(), kUnits.Unit, startingPlot:GetX(), startingPlot:GetY(), numUnit)
+			end
+		end
+	end	
 end
 
 function SetCurrentBonuses()
@@ -204,11 +257,27 @@ function SetCurrentBonuses()
 	local totalScience 	= 0
 	local totalCulture 	= 0
 	local totalGold 	= 0
+	local totalCities	= 0
+	local totalToken	= 0
+	local totalFaith	= 0
+	
+	for kEra in GameInfo.StartEras() do
+		if kEra.Year and kEra.Year < currentTurnYear then
+			local era = GameInfo.Eras[kEra.EraType].Index				
+			if era > currentEra then
+				print ("Changing current Era to current year's Era :" .. tostring(kEra.EraType))
+				currentEra = era
+			end		
+		end
+	end	
 	
 	for iPlayer = 0, PlayerManager.GetWasEverAliveCount() - 1 do
 		local player = Players[iPlayer]
 		if player and player:IsMajor() and player:GetCities():GetCount() > 0 then
 			playersWithCity = playersWithCity + 1
+			totalCities		= totalCities + player:GetCities():GetCount()
+			
+			local CivilizationTypeName = PlayerConfigurations[iPlayer]:GetCivilizationTypeName()
 				
 			-- Science	
 			local pScience = player:GetTechs()
@@ -221,6 +290,7 @@ function SetCurrentBonuses()
 				end
 			end
 			
+			-- Culture
 			local pCulture = player:GetCulture()
 			researchedCivics[pCulture:GetProgressingCivic()] = true
 			for kCivic in GameInfo.Civics() do		
@@ -231,14 +301,16 @@ function SetCurrentBonuses()
 				end
 			end
 			
-			local pTreasury = player:GetTreasury()
-			
-			totalGold = totalGold + pTreasury:GetGoldYield() + pTreasury:GetTotalMaintenance()
-			
+			-- Gold
+			local pTreasury = player:GetTreasury()			
+			totalGold = totalGold + pTreasury:GetGoldYield() + pTreasury:GetTotalMaintenance()			
 			if pTreasury:GetGoldBalance() > 0 then
 				totalGold = totalGold + pTreasury:GetGoldBalance()
 			end
 						
+			-- Faith
+			totalFaith = totalFaith + player:GetReligion():GetFaithYield()
+			
 			local playerUnits = player:GetUnits(); 	
 			for i, unit in playerUnits:Members() do
 				local unitInfo = GameInfo.Units[unit:GetType()];
@@ -247,8 +319,18 @@ function SetCurrentBonuses()
 			
 			local era = player:GetEras():GetEra()
 			if era > currentEra then
-				print ("Changing current Era to " .. tostring(GameInfo.Eras[era].EraType))
+				print ("----------")
+				print ("Changing current Era to "..tostring(CivilizationTypeName).." Era :" .. tostring(GameInfo.Eras[era].EraType))
 				currentEra = era
+			end
+			
+			tokenBonus = tokenBonus + player:GetInfluence():GetTokensToGive()
+			for i, minorPlayer in ipairs(PlayerManager.GetAliveMinors()) do
+				local iMinorPlayer 		= minorPlayer:GetID()				
+				local minorInfluence	= minorPlayer:GetInfluence()		
+				if minorInfluence ~= nil then
+					tokenBonus = tokenBonus + minorInfluence:GetTokensReceived(iPlayer)
+				end
 			end
 	
 		end
@@ -258,11 +340,110 @@ function SetCurrentBonuses()
 		scienceBonus 	= Round(totalScience/playersWithCity)
 		minCivForTech	= playersWithCity*25/100
 		minCivForCivic	= playersWithCity*10/100
-		goldBonus = Round(totalGold/playersWithCity)
+		goldBonus 		= Round(totalGold/playersWithCity)
+		settlersBonus 	= Round((totalCities-1)/playersWithCity)
+		tokenBonus 		= Round(totalToken/playersWithCity)
+		faithBonus		= Round(totalFaith * (currentEra+1) * 25/100)
 	end
 	
 end
-GameEvents.OnGameTurnStarted.Add(SetCurrentBonuses)
+if bApplyBalance then
+	GameEvents.OnGameTurnStarted.Add(SetCurrentBonuses)
+end
+
+function OnCityInitialized(iPlayer, cityID, x, y)
+	local city = CityManager.GetCity(iPlayer, cityID)
+	local player = Players[iPlayer]
+	if not player:IsMajor() then return end
+	local cityPlot = Map.GetPlot(x, y)
+	local CivilizationTypeName = PlayerConfigurations[iPlayer]:GetCivilizationTypeName()
+	print("------------")
+	print("Initializing new city for " .. tostring(CivilizationTypeName))
+	
+	local playerEra = GetStartingEra(iPlayer)
+	
+	local kEraBonuses = GameInfo.StartEras[playerEra]
+	print("Era = "..tostring(playerEra))
+	print("StartingPopulationCapital = "..tostring(kEraBonuses.StartingPopulationCapital))
+	print("StartingPopulationOtherCities = "..tostring(kEraBonuses.StartingPopulationOtherCities))
+	
+	if kEraBonuses.StartingPopulationCapital and city == player:GetCities():GetCapitalCity() then 
+		city:ChangePopulation(kEraBonuses.StartingPopulationCapital-1)
+	elseif kEraBonuses.StartingPopulationOtherCities then
+		city:ChangePopulation(kEraBonuses.StartingPopulationOtherCities-1)
+	end
+	
+	for kBuildings in GameInfo.StartingBuildings() do
+		if GameInfo.Eras[kBuildings.Era].Index <= playerEra and kBuildings.District == "DISTRICT_CITY_CENTER" then
+			local iBuilding = GameInfo.Buildings[kBuildings.Building].Index
+			if not city:GetBuildings():HasBuilding(iBuilding) then
+				print("Starting Building = "..tostring(kBuildings.Building))
+				WorldBuilder.CityManager():CreateBuilding(city, kBuildings.Building, 100, cityPlot)
+			end
+		end
+	end
+	
+	-- City plazza for Era bonuses
+	local EraBuilding = "BUILDING_CENTER_"..tostring(GameInfo.Eras[playerEra].EraType)
+	print("Starting Era Building = "..tostring(EraBuilding))
+	if GameInfo.Buildings[EraBuilding] then
+		--WorldBuilder.CityManager():CreateBuilding(city, EraBuilding, 100, cityPlot)
+		local pCityBuildQueue = city:GetBuildQueue();
+		pCityBuildQueue:CreateIncompleteBuilding(GameInfo.Buildings[EraBuilding].Index, 100);
+	end	
+	
+	for kUnits in GameInfo.MajorStartingUnits() do
+		if GameInfo.Eras[kUnits.Era].Index == playerEra and kUnits.OnDistrictCreated and not (kUnits.AiOnly) then -- (player:IsHuman() and kUnits.AiOnly) -- to do : difficulty difference check
+			local numUnit = math.max(kUnits.Quantity, 1)
+			print(" - "..tostring(kUnits.Unit).." = "..tostring(numUnit))			
+			if kUnits.Unit == "UNIT_TRADER" then
+				UnitManager.InitUnit(iPlayer, kUnits.Unit, x, y, numUnit)
+			else
+				UnitManager.InitUnitValidAdjacentHex(iPlayer, kUnits.Unit, x, y, numUnit)
+			end
+		end
+	end	
+	
+end
+
+-- test capture or creation
+local cityCaptureTest = {}
+function CityCaptureDistrictRemoved(iPlayer, districtID, cityID, iX, iY)
+	local key = iX..","..iY
+	cityCaptureTest[key]			= {}
+	cityCaptureTest[key].Turn 		= Game.GetCurrentGameTurn()
+	cityCaptureTest[key].iPlayer 	= iPlayer
+	cityCaptureTest[key].CityID 	= cityID
+end
+function CityCaptureCityInitialized(iPlayer, cityID, iX, iY)
+	local key = iX..","..iY
+	local bCaptured = false
+	if (	cityCaptureTest[key]
+		and cityCaptureTest[key].Turn 	== Game.GetCurrentGameTurn() )
+	then
+		cityCaptureTest[key].CityInitializedXY = true
+		local city = CityManager.GetCity(iPlayer, cityID)
+		local originalOwnerID 	= city:GetOriginalOwner()
+		if cityCaptureTest[key].iPlayer == originalOwnerID then
+			print("City captured")
+			cityCaptureTest[key] = {}
+			bCaptured = true
+		end
+	end
+	if not bCaptured then
+		OnCityInitialized(iPlayer, cityID, iX, iY)
+	end
+end
+
+
+-- Initialize
+function OnLoadScreenClosed()
+	if bApplyBalance then
+		Events.DistrictRemovedFromMap.Add(CityCaptureDistrictRemoved)
+		Events.CityInitialized.Add(CityCaptureCityInitialized)
+	end
+end
+Events.LoadScreenClose.Add(OnLoadScreenClosed)
 
 --[[
 function FoundFirstPotentialSpawn()

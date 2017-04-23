@@ -4,5 +4,8 @@
 	<Replace Tag="LOC_MAP_HISTORICAL_SPAWN_NAME" Language="en_US">
       <Text>Use Historical Spawn Dates</Text>
     </Replace>	
+	<Replace Tag="LOC_MAP_BALANCE_HSD" Language="en_US">
+      <Text>Give bonuses to later spawning Civilizations</Text>
+    </Replace>	
   </LocalizedText>
 </GameData>

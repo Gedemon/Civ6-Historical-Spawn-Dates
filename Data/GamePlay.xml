@@ -1,0 +1,66 @@
+<GameInfo>
+	<Types>		
+		<Row Type="BUILDING_CENTER_ERA_CLASSICAL" 	Kind="KIND_BUILDING" />
+		<Row Type="BUILDING_CENTER_ERA_MEDIEVAL" 	Kind="KIND_BUILDING" />
+		<Row Type="BUILDING_CENTER_ERA_RENAISSANCE" Kind="KIND_BUILDING" />
+		<Row Type="BUILDING_CENTER_ERA_INDUSTRIAL" 	Kind="KIND_BUILDING" />
+		<Row Type="BUILDING_CENTER_ERA_MODERN" 		Kind="KIND_BUILDING" />
+		<Row Type="BUILDING_CENTER_ERA_ATOMIC" 		Kind="KIND_BUILDING" />
+		<Row Type="BUILDING_CENTER_ERA_INFORMATION" Kind="KIND_BUILDING" />		
+	</Types>
+	
+	<Buildings>		
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 		Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="2" Entertainment="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 		Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="2" Entertainment="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" 	Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="5" Entertainment="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 		Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="5" Entertainment="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 			Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="8" Entertainment="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 			Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="8" Entertainment="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" 	Name="LOC_BUILDING_CENTER_NAME" Description="LOC_BUILDING_CENTER_DESCRIPTION" PrereqDistrict="DISTRICT_CITY_CENTER" ObsoleteEra="ERA_ANCIENT" Cost="1" Housing="11" Entertainment="6"/>
+	</Buildings>	
+	
+	<Building_YieldChanges>
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 	YieldType="YIELD_CULTURE" 		YieldChange="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 	YieldType="YIELD_FAITH" 		YieldChange="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 	YieldType="YIELD_FOOD" 			YieldChange="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 	YieldType="YIELD_GOLD" 			YieldChange="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 	YieldType="YIELD_PRODUCTION" 	YieldChange="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_CLASSICAL" 	YieldType="YIELD_SCIENCE" 		YieldChange="1"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 	YieldType="YIELD_CULTURE" 		YieldChange="2"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 	YieldType="YIELD_FAITH" 		YieldChange="2"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 	YieldType="YIELD_FOOD" 			YieldChange="2"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 	YieldType="YIELD_GOLD" 			YieldChange="2"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 	YieldType="YIELD_PRODUCTION" 	YieldChange="2"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MEDIEVAL" 	YieldType="YIELD_SCIENCE" 		YieldChange="2"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" YieldType="YIELD_CULTURE" 		YieldChange="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" YieldType="YIELD_FAITH" 		YieldChange="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" YieldType="YIELD_FOOD" 			YieldChange="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" YieldType="YIELD_GOLD" 			YieldChange="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" YieldType="YIELD_PRODUCTION" 	YieldChange="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_RENAISSANCE" YieldType="YIELD_SCIENCE" 		YieldChange="3"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 	YieldType="YIELD_CULTURE" 		YieldChange="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 	YieldType="YIELD_FAITH" 		YieldChange="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 	YieldType="YIELD_FOOD" 			YieldChange="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 	YieldType="YIELD_GOLD" 			YieldChange="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 	YieldType="YIELD_PRODUCTION" 	YieldChange="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INDUSTRIAL" 	YieldType="YIELD_SCIENCE" 		YieldChange="4"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 		YieldType="YIELD_CULTURE" 		YieldChange="5"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 		YieldType="YIELD_FAITH" 		YieldChange="5"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 		YieldType="YIELD_FOOD" 			YieldChange="5"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 		YieldType="YIELD_GOLD" 			YieldChange="5"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 		YieldType="YIELD_PRODUCTION" 	YieldChange="5"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_MODERN" 		YieldType="YIELD_SCIENCE" 		YieldChange="5"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 		YieldType="YIELD_CULTURE" 		YieldChange="6"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 		YieldType="YIELD_FAITH" 		YieldChange="6"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 		YieldType="YIELD_FOOD" 			YieldChange="6"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 		YieldType="YIELD_GOLD" 			YieldChange="6"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 		YieldType="YIELD_PRODUCTION" 	YieldChange="6"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_ATOMIC" 		YieldType="YIELD_SCIENCE" 		YieldChange="6"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" YieldType="YIELD_CULTURE" 		YieldChange="7"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" YieldType="YIELD_FAITH" 		YieldChange="7"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" YieldType="YIELD_FOOD" 			YieldChange="7"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" YieldType="YIELD_GOLD" 			YieldChange="7"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" YieldType="YIELD_PRODUCTION" 	YieldChange="7"/>
+		<Row BuildingType="BUILDING_CENTER_ERA_INFORMATION" YieldType="YIELD_SCIENCE" 		YieldChange="7"/>
+	</Building_YieldChanges>
+</GameInfo>
